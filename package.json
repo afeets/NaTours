@@ -12,6 +12,7 @@
   "dependencies": {
     "dotenv": "^18.0.9",
     "express": "^4.22.3",
+    "mongoose": "^5.13.23",
     "morgan": "^1.12.1"
   },
   "devDependencies": {
@@ -24,5 +25,8 @@
     "eslint-plugin-prettier": "^5.5.7",
     "eslint-plugin-react": "^7.37.5",
     "prettier": "^3.9.10"
+  },
+  "engines": {
+    "node": ">=10.0.0"
   }
 }
