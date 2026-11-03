@@ -3,14 +3,18 @@ const morgan = require('morgan');
 
 const app = express();
 
-const tourRouter = require('./routes/tourRoutes.js');
-const userRouter = require('./routes/userRoutes.js');
+const tourRouter = require('./routes/tourRoutes');
+const userRouter = require('./routes/userRoutes');
 
-const keys = require('./config/dev.js');
+const keys = require('./config/dev');
 
 // MIDDLEWARE /////////////////////////////////////////
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
 app.use(express.json());
+app.use(express.static(`${__dirname}/public`));
 
 // applies to all route requests
 app.use((req, res, next) => {
