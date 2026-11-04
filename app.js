@@ -1,13 +1,16 @@
 const express = require('express');
 const morgan = require('morgan');
-
+const keys = require('./config/dev');
 const app = express();
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const qs = require('qs');
 
 // MIDDLEWARE /////////////////////////////////////////
-if (process.env.NODE_ENV === 'development') {
+app.set('query parser', (str) => qs.parse(str));
+
+if (keys.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
