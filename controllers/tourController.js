@@ -41,7 +41,36 @@ exports.getAllTours = async (req, res) => {
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
     // console.log(JSON.parse(queryStr));
-    const query = Tour.find(JSON.parse(queryStr));
+    let query = Tour.find(JSON.parse(queryStr));
+
+    // sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt'); // default query if no sort specified
+    }
+
+    // limit fields returned
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v'); // exclude fields
+    }
+
+    // pagination eg http://127.0.0.1:3000/api/v1/tours?page=1&limit=3
+    const page = req.query.page * 1 || 1; // cast to integer, default 1
+    const limit = req.query.limit * 1 || 100; // cast to integer, default 100
+    const skip = (page - 1) * limit;
+
+    // execute query
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error('This page does not exist');
+    }
 
     const tours = await query;
 
@@ -134,4 +163,11 @@ exports.deleteTour = async (req, res) => {
       tour: null,
     },
   });
+};
+
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
 };
