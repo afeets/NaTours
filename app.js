@@ -17,14 +17,16 @@ if (keys.NODE_ENV === 'development') {
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
-// applies to all route requests
-app.use((req, res, next) => {
-  console.log('Hello from middleware');
-  next();
-});
-
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+
+// handle non defined URLs with NOT FOUND
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `Can't find ${req.originalUrl} on this server`,
+  });
+});
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
