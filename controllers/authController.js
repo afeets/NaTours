@@ -5,16 +5,16 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const keys = require('../config/dev');
 
-const signToken = (id) => {
-  return jwt.sign({ id }, keys.JWT_SECRET, {
+const signToken = (id) =>
+  jwt.sign({ id }, keys.JWT_SECRET, {
     expiresIn: keys.JWT_EXPIRES,
   });
-};
 
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
+    role: req.body.role,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     passwordChangedAt: req.body.passwordChangedAt,
@@ -93,3 +93,16 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// restrict certain routes to certain roles
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
+    // roles array eg ['admin', 'user']
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403),
+      );
+    }
+    return next();
+  };
