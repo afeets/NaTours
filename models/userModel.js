@@ -62,6 +62,14 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  // subtract 1000ms from timestamp
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 // instance method available all docs in collection
 userSchema.methods.correctPassword = async function (
   candidatePassword,
