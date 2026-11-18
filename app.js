@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const keys = require('./config/dev');
 const app = express();
@@ -14,11 +15,14 @@ const qs = require('qs');
 // GLOBAL MIDDLEWARE /////////////////////////////////////////
 app.set('query parser', (str) => qs.parse(str));
 
+// set security HTTP Headers
+app.use(helmet());
+
 if (keys.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// limit number of requests from an IP in time window (eg 1hour)
+// limit number of requests from same API in time window (eg 1hour)
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000,
@@ -26,7 +30,11 @@ const limiter = rateLimit({
 });
 
 app.use('/api', limiter);
-app.use(express.json());
+
+// body parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+
+// serve static files
 app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
