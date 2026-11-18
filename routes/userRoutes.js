@@ -14,6 +14,10 @@ router.patch(
 );
 
 router
+  .route('/updateMe')
+  .patch(authController.protect, userController.updateMe);
+
+router
   .route('/')
   .get(userController.getAllUsers)
   .post(userController.createUser);
