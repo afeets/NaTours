@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const keys = require('./config/dev');
 const app = express();
@@ -13,6 +14,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const qs = require('qs');
+const { whitelist } = require('validator');
 
 // GLOBAL MIDDLEWARE /////////////////////////////////////////
 app.set('query parser', (str) => qs.parse(str));
@@ -41,6 +43,20 @@ app.use(mongoSanitize());
 
 // data sanitization against XSS, converting html tags into clean code
 app.use(xss());
+
+// prevent parameter polution, cleaning up query string, whitelisting some properties
+app.use(
+  hpp({
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  }),
+);
 
 // serve static files
 app.use(express.static(`${__dirname}/public`));
