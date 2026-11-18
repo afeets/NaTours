@@ -8,6 +8,15 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 const keys = require('../config/dev');
 
+const cookieOptions = {
+  expires: new Date(
+    // convert to ms
+    Date.now() + keys.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+  ),
+  secure: false,
+  httpOnly: true,
+};
+
 const signToken = (id) =>
   jwt.sign({ id }, keys.JWT_SECRET, {
     expiresIn: keys.JWT_EXPIRES,
@@ -15,6 +24,13 @@ const signToken = (id) =>
 
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
+
+  if (keys.NODE_ENV === 'production') cookieOptions.secure = true;
+  // send cookie
+  res.cookie('jwt', token, cookieOptions);
+
+  // don't output encrypted password
+  user.password = undefined;
 
   res.status(statusCode).json({
     status: 'success',

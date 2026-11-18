@@ -1,5 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+
 const keys = require('./config/dev');
 const app = express();
 
@@ -9,13 +11,21 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const qs = require('qs');
 
-// MIDDLEWARE /////////////////////////////////////////
+// GLOBAL MIDDLEWARE /////////////////////////////////////////
 app.set('query parser', (str) => qs.parse(str));
 
 if (keys.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// limit number of requests from an IP in time window (eg 1hour)
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests from this IP. Please try again in an hour',
+});
+
+app.use('/api', limiter);
 app.use(express.json());
 app.use(express.static(`${__dirname}/public`));
 
