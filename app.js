@@ -13,6 +13,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
 const qs = require('qs');
 const { whitelist } = require('validator');
 
@@ -74,17 +75,10 @@ app.get('/', (req, res) => {
   });
 });
 
-/*
-app.get('/api/v1/tours', getAllTours);
-app.get('/api/v1/tours/:id', getTourById);
-app.post('/api/v1/tours', createTour);
-app.patch('/api/v1/tours/:id', updateTour);
-app.delete('/api/v1/tours/:id', deleteTour);
-*/
-
 // ROUTES /////////////////////////////////////////////////////
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 // handle non defined URLs with NOT FOUND
 app.all('*', (req, res, next) => {
