@@ -33,11 +33,21 @@ const reviewSchema = new mongoose.Schema(
 );
 
 // include selected fields from referenced child
+/* Chain referenced childs
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'tour',
     select: 'name',
   }).populate({
+    path: 'user',
+    select: 'name photo',
+  });
+  next();
+});
+*/
+
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
     path: 'user',
     select: 'name photo',
   });
