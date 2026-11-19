@@ -65,6 +65,36 @@ const tourSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
+    startLocation: {
+      // GeoJSON specify Geo Spatial data
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
     imageCover: {
       type: String,
       required: [true, 'A Tour must have a cover image'],
@@ -94,6 +124,15 @@ tourSchema.virtual('DurationInWeeks').get(function () {
 // document middleware, function called before doc save and create methods to DB
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// include selected fields from referenced child
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
 

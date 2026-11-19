@@ -4,18 +4,19 @@ const Tour = require('../../models/tourModel');
 const keys = require('../../config/dev');
 
 const DB = keys.DB_CONN_STRING.replace('<PASSWORD>', keys.DB_PASSWORD);
+try {
+  mongoose
+    .connect(DB, {
+      useNewUrlParser: true,
+      useCreateIndex: true,
+      useFindAndModify: false,
+    })
+    .then(() => console.log('DB Connection Successful'));
+} catch (err) {
+  console.log(err);
+}
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
-  .then(() => console.log('DB Connection Successful'));
-
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/tours-simple.json`, 'utf-8'),
-);
+const tours = JSON.parse(fs.readFileSync(`${__dirname}/tours.json`, 'utf-8'));
 
 const importData = async () => {
   try {
@@ -24,6 +25,7 @@ const importData = async () => {
   } catch (err) {
     console.log(err);
   }
+  process.exit();
 };
 
 const deleteData = async () => {
@@ -33,6 +35,7 @@ const deleteData = async () => {
   } catch (err) {
     console.log(err);
   }
+  process.exit();
 };
 
 if (process.argv[2] === '--import') {
@@ -41,5 +44,4 @@ if (process.argv[2] === '--import') {
   deleteData();
 }
 
-process.exit();
 // console.log(process.argv);
