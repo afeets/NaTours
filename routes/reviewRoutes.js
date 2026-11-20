@@ -5,6 +5,9 @@ const authController = require('../controllers/authController');
 // access params from other routers use mergeParams
 const router = express.Router({ mergeParams: true });
 
+// all routes below require authentication
+router.use(authController.protect);
+
 router
   .route('/')
   .get(reviewController.getAllReviews)
@@ -18,7 +21,13 @@ router
 router
   .route('/:id')
   .get(reviewController.getReviewById)
-  .delete(reviewController.deleteReview)
-  .patch(reviewController.updateReview);
+  .delete(
+    authController.restrictTo('user', 'admin'),
+    reviewController.deleteReview,
+  )
+  .patch(
+    authController.restrictTo('user', 'admin'),
+    reviewController.updateReview,
+  );
 
 module.exports = router;

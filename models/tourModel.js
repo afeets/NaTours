@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
-const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -116,6 +115,13 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 );
+
+// Index single Price ascending
+// tourSchema.index({ price: 1 });
+tourSchema.index({ slug: 1 });
+
+// compound index - price asc, ratings desc
+tourSchema.index({ price: 1, ratingsAverage: -1 });
 
 // virtual populates
 tourSchema.virtual('DurationInWeeks').get(function () {
