@@ -86,6 +86,18 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/overview', (req, res) => {
+  res.status(200).render('overview', {
+    title: 'All Tours',
+  });
+});
+
+app.get('/tour', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'The Forest Hiker',
+  });
+});
+
 // API ROUTES /////////////////////////////////////////////////////
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
