@@ -20,6 +20,7 @@ const tourSchema = new mongoose.Schema(
       default: 4.5,
       min: [1, 'Rating must be above 1.0'],
       max: [5, 'Rating must be below 5.0'],
+      set: (val) => Math.round(val * 10) / 10,
     },
     ratingsQuantity: {
       type: Number,
@@ -122,6 +123,9 @@ tourSchema.index({ slug: 1 });
 
 // compound index - price asc, ratings desc
 tourSchema.index({ price: 1, ratingsAverage: -1 });
+
+// 2dsphere geospatial index based on Earth
+tourSchema.index({ startLocation: '2dsphere' });
 
 // virtual populates
 tourSchema.virtual('DurationInWeeks').get(function () {

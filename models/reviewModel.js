@@ -47,6 +47,9 @@ reviewSchema.pre(/^find/, function (next) {
 });
 */
 
+// prevent duplicate reviews by user
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'user',
@@ -92,7 +95,7 @@ reviewSchema.post('save', function () {
 
 // middleware to handle findByIdAndUpdate and findByIdAndDelete
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  // save to this, which can then be used later in post middleware
+  // save to this.review, which can then be used later in post middleware
   this.review = await this.findOne();
   next();
 });
