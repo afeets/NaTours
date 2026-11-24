@@ -166,11 +166,12 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 // aggregation middleware
-tourSchema.pre('aggregate', function (next) {
-  // unshift adds to beginning of array, adding a match query
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   // unshift adds to beginning of array, adding a match query
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   console.log(this.pipeline());
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
