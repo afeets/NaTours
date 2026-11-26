@@ -21,6 +21,8 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
+
 const qs = require('qs');
 
 // GLOBAL MIDDLEWARE /////////////////////////////////////////
@@ -79,24 +81,7 @@ app.use((req, res, next) => {
 // });
 
 // CLIENT ROUTES WITH PUG TEMPLATES ////////////////////////////////
-app.get('/', (req, res) => {
-  res.status(200).render('base', {
-    tour: 'The Forest Hiker',
-    user: 'Andy',
-  });
-});
-
-app.get('/overview', (req, res) => {
-  res.status(200).render('overview', {
-    title: 'All Tours',
-  });
-});
-
-app.get('/tour', (req, res) => {
-  res.status(200).render('tour', {
-    title: 'The Forest Hiker',
-  });
-});
+app.use('/', viewRouter);
 
 // API ROUTES /////////////////////////////////////////////////////
 app.use('/api/v1/tours', tourRouter);
